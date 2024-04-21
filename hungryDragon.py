@@ -74,6 +74,23 @@ coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
 coin_rect.y = random.randint(64, WINDOW_HEIGHT - 32)
 
 
+# Game functionality
+
+# Define functions for better organization
+def moveDragon():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            return False
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP] and player_rect.top > 64:
+        player_rect.y -= PLAYER_VELOCITY
+    if keys[pygame.K_DOWN] and player_rect.bottom < WINDOW_HEIGHT:
+        player_rect.y += PLAYER_VELOCITY
+    return True
+
+
+
+
 #The main game loop
 running = True
 while running:
