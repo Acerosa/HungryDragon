@@ -55,6 +55,25 @@ continue_text = font.render("Press a key to play again", True, GREEN, DARKGREEN)
 continue_rect = continue_text.get_rect()
 continue_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 32)
 
+
+#Set sounds and music
+coin_sound = pygame.mixer.Sound("Hungry _Dragon_assets/coin_sound.wav")
+miss_sound = pygame.mixer.Sound("Hungry _Dragon_assets/miss_sound.wav")
+miss_sound.set_volume(.1)
+pygame.mixer.music.load("Hungry _Dragon_assets/ftd_background_music.wav")
+
+#Set images
+player_image = pygame.image.load("Hungry _Dragon_assets/dragon_right.png")
+player_rect = player_image.get_rect()
+player_rect.left = 32
+player_rect.centery = WINDOW_HEIGHT//2
+
+coin_image = pygame.image.load("Hungry _Dragon_assets/coin.png")
+coin_rect = coin_image.get_rect()
+coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
+coin_rect.y = random.randint(64, WINDOW_HEIGHT - 32)
+
+
 #The main game loop
 running = True
 while running:
@@ -72,6 +91,9 @@ while running:
     display_surface.blit(lives_text, lives_rect)
     pygame.draw.line(display_surface, WHITE, (0, 64), (WINDOW_WIDTH, 64), 2)
 
+    # Blit assets to screen
+    display_surface.blit(player_image, player_rect)
+    display_surface.blit(coin_image, coin_rect)
 
     # Update display and tick the clock
     pygame.display.update()
