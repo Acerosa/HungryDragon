@@ -78,15 +78,59 @@ coin_rect.y = random.randint(64, WINDOW_HEIGHT - 32)
 
 # Define functions for better organization
 def moveDragon():
+    # Check for any events (such as quitting the game)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            return False
+            return False  # If the user quits, return False to exit the game loop
+
+    # Get the state of all keyboard keys
     keys = pygame.key.get_pressed()
+
+    # Check if the up arrow key is pressed and the dragon's top position is above the top boundary
     if keys[pygame.K_UP] and player_rect.top > 64:
-        player_rect.y -= PLAYER_VELOCITY
+        player_rect.y -= PLAYER_VELOCITY  # Move the dragon up by PLAYER_VELOCITY units
+
+    # Check if the down arrow key is pressed and the dragon's bottom position is below the bottom boundary
     if keys[pygame.K_DOWN] and player_rect.bottom < WINDOW_HEIGHT:
-        player_rect.y += PLAYER_VELOCITY
-    return True
+        player_rect.y += PLAYER_VELOCITY  # Move the dragon down by PLAYER_VELOCITY units
+
+    return True  # Return True to indicate that the function executed successfully
+
+
+def resetCoin():
+    # Reset the  x-position of the coin outside the right edge of the window
+    coin_rect.x = WINDOW_WIDTH + BUFFER_DISTANCE
+    # Set the y-position of the coin to a random value within the window area
+    coin_rect.y = random.randint(64, WINDOW_HEIGHT - 32)
+
+
+def updateGame():
+    # Grab global variables to update them in the function
+    global score, player_lives, coin_velocity
+
+    # Check if the coin has reached the left edge of the window
+    if coin_rect.x < 0:
+        # Decrease player's lives count when the coin is missed
+        player_lives -= 1
+        # Play the miss sound effect
+        miss_sound.play()
+        # Reset the coin to a new random position
+        resetCoin()
+    else:
+        # Move the coin towards the left side of the window
+        coin_rect.x -= coin_velocity
+
+    # Check if there's collision between the player and the coin
+    if player_rect.colliderect(coin_rect):
+        # Increase player's score when the coin is caught
+        score += 1
+        # Play the coin collection sound effect
+        coin_sound.play()
+        # Increase the coin velocity to increase difficulty
+        coin_velocity += COIN_ACCELERATION
+        # Reset the coin to a new random position
+        resetCoin()
+
 
 
 
