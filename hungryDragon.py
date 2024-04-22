@@ -131,33 +131,79 @@ def updateGame():
         # Reset the coin to a new random position
         resetCoin()
 
+def showGameOver():
+    # Blit the "GAME OVER" text to the screen
+    display_surface.blit(game_over_text, game_over_rect)
+    # Blit the "Press any key to play again" to the screen
+    display_surface.blit(continue_text, continue_rect)
+    # Update to show the game over screen
+    pygame.display.update()
 
 
+def gameReseter():
+    # Grabbing global variables to use them in the function
+    global score, player_lives, coin_velocity
+
+    # Reset the game variables to their initial values
+    score = 0  # Reset the player's score to zero
+    player_lives = PLAYER_STARTING_LIVES  # Reset the player's lives to the original value
+    player_rect.y = WINDOW_HEIGHT // 2  # Reset the player's vertical position to the center of the window
+    coin_velocity = COIN_STARTING_VELOCITY  # Reset the coin velocity to the original value
+
+    # Restart the background music
+    pygame.mixer.music.play(-1, 0.0)
+
+def gameOverHandler():
+    # Stop the background music
+    pygame.mixer.music.stop()
+    # Pausing the game
+    is_paused = True
+    # Continue loop while game is paused
+    while is_paused:
+        # Check for events
+        for event in pygame.event.get():
+            # If any key is pressed, reset the game
+            if event.type == pygame.KEYDOWN:
+                gameReseter()
+                is_paused = False  # Unpause game
+            # If the user wants to quit return False to exit the game loop
+            if event.type == pygame.QUIT:
+                return False
+    # return True to continue the game loop
+    return True
 
 
-#The main game loop
+# Main game loop
+pygame.mixer.music.play(-1, 0.0)
 running = True
 while running:
-    #Check to see if user wants to quit
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    # Check for user input
+    running = moveDragon()  # update game accordingly
+    updateGame()  # update the game accordingly
 
-    # Fill the display
+    # Render game elements on the screen
+    score_text = font.render("Score: " + str(score), True, GREEN, DARKGREEN)  # score text
+    lives_text = font.render("Lives: " + str(player_lives), True, GREEN, DARKGREEN)  # lives text
+
+    # Check player lives for game over
+    if player_lives == 0:
+        gameOverHandler()  # Display game over
+        # Handle game over to continue the game
+        if not gameOverHandler():
+            running = False  # Exit the game loop if the player wants quit
+
+    # Fill the background
     display_surface.fill(BLACK)
+    # Blit game elements
+    display_surface.blit(score_text, score_rect)  # Render score text
+    display_surface.blit(title_text, title_rect)  # Render title text
+    display_surface.blit(lives_text, lives_rect)  # Render lives text
+    pygame.draw.line(display_surface, WHITE, (0, 64), (WINDOW_WIDTH, 64), 2)  # Draw a line
+    display_surface.blit(player_image, player_rect)  # Render the player
+    display_surface.blit(coin_image, coin_rect)  # Render the coin
 
-    # Blit the HUD to screen
-    display_surface.blit(score_text, score_rect)
-    display_surface.blit(title_text, title_rect)
-    display_surface.blit(lives_text, lives_rect)
-    pygame.draw.line(display_surface, WHITE, (0, 64), (WINDOW_WIDTH, 64), 2)
+    pygame.display.update()  # Update the display
+    clock.tick(FPS)  # Cap the frame rate
 
-    # Blit assets to screen
-    display_surface.blit(player_image, player_rect)
-    display_surface.blit(coin_image, coin_rect)
-
-    # Update display and tick the clock
-    pygame.display.update()
-    clock.tick(FPS)
-#End the game
-pygame.quit()
+# End the game
+pygame.quit()  # Quit the Pygame close and window
